@@ -1,0 +1,92 @@
+.calculation-stats {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .calculation-stats h3 {
+    margin-top: 0;
+    color: #4a55a2;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .stat-item {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    text-align: center;
+  }
+  
+  .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #4a55a2;
+  }
+  
+  .age-distribution {
+    margin-top: 1.5rem;
+  }
+  
+  .age-distribution h4 {
+    margin-bottom: 1rem;
+    color: #4a55a2;
+  }
+  
+  .distribution-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .distribution-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .range-label {
+    width: 50px;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .range-bar-container {
+    flex: 1;
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .range-bar {
+    height: 100%;
+    background-color: #7895cb;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+  }
+  
+  .range-count {
+    width: 30px;
+    text-align: right;
+    font-size: 0.9rem;
+    color: #666;
+  }

@@ -8,6 +8,7 @@ const CalculationHistory = ({ refreshTrigger }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { currentUser } = useAuth();
+  const [sortOrder, setSortOrder] = useState("newest");
 
 //   useEffect(() => {
 //     if (!currentUser) return;
@@ -50,6 +51,10 @@ const CalculationHistory = ({ refreshTrigger }) => {
     return () => unsubscribe();
   }, [currentUser]);
 
+  const handleSortChange = (e) => {
+    setSortOrder(e.target.value);
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString();
@@ -71,9 +76,37 @@ const CalculationHistory = ({ refreshTrigger }) => {
     return <div className="no-calculations">You haven't made any calculations yet.</div>;
   }
 
+  const sortedCalculations = [...calculations].sort((a, b) => {
+    if (sortOrder === "newest") {
+      return b.calculatedAt - a.calculatedAt;
+    } else if (sortOrder === "oldest") {
+      return a.calculatedAt - b.calculatedAt;
+    } else if (sortOrder === "youngest") {
+      return (a.result.years * 365 + a.result.months * 30 + a.result.days) - 
+             (b.result.years * 365 + b.result.months * 30 + b.result.days);
+    } else if (sortOrder === "oldest-age") {
+      return (b.result.years * 365 + b.result.months * 30 + b.result.days) - 
+             (a.result.years * 365 + a.result.months * 30 + a.result.days);
+    }
+    return 0;
+  });  
+
   return (
     <div className="calculation-history">
       <h2>Your Calculation History</h2>
+      <div className="sort-controls">
+        <label htmlFor="sort">Sort by: </label>
+        <select 
+            id="sort" 
+            value={sortOrder} 
+            onChange={handleSortChange}
+        >
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="youngest">Youngest Age First</option>
+            <option value="oldest-age">Oldest Age First</option>
+        </select>
+      </div>
       <div className="history-list">
         {calculations.map((calc) => (
           <div key={calc.id} className="history-item">
