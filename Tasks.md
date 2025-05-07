@@ -338,20 +338,23 @@ const CalculationStats = ({ calculations }) => {
       <div className="age-distribution">
         <h4>Age Distribution</h4>
         <div className="distribution-bars">
-          {Object.entries(stats.ageRanges).map(([range, count]) => (
-            <div key={range} className="distribution-item">
-              <div className="range-label">{range}</div>
-              <div className="range-bar-container">
-                <div 
-                  className="range-bar" 
-                  style={{ 
-                    width: `${(count / stats.total) * 100}%` 
-                  }}
-                ></div>
+          {stats?.ageRanges ? (
+            Object.entries(stats.ageRanges).map(([range, count]) => (
+              <div key={range} className="distribution-item">
+                <div className="range-label">{range}</div>
+                <div className="range-bar-container">
+                  <div 
+                    className="range-bar" 
+                    style={{ 
+                      width: `${(count / stats.total) * 100}%` 
+                    }}
+                  ></div>
+                </div>
               </div>
-              <div className="range-count">{count}</div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No age distribution data available.</p>
+          )}
         </div>
       </div>
     </div>
