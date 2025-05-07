@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../../services/auth";
+import { updateProfile } from "firebase/auth";
 import "./Register.css";
 
 const Register = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -36,9 +38,20 @@ const Register = () => {
         setError(error);
         return;
       }
+
+      if (user) {
+        try {
+          await updateProfile(user, {
+            displayName: name
+          });
+          navigate("/dashboard");
+        } catch (err) {
+          setError("Failed to update profile. Please try again.");
+        }
+      }
       
       // Redirect to dashboard on successful registration
-      navigate("/dashboard");
+    //   navigate("/dashboard");
     } catch (err) {
       setError("Failed to create an account. Please try again.");
     } finally {
@@ -61,6 +74,17 @@ const Register = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="name">Name</label>
+            <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
             />
           </div>
           

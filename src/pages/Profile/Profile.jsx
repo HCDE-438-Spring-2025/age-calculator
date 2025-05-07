@@ -83,6 +83,10 @@ const Profile = () => {
             <span className="info-label">Email:</span>
             <span className="info-value">{currentUser?.email}</span>
           </div>
+          <div className="info-item">
+            <span className="info-label">Name:</span>
+            <span className="info-value">{currentUser?.displayName}</span>
+          </div>
         </div>
         
         <div className="profile-actions">
