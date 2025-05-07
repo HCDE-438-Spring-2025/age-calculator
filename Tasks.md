@@ -1,6 +1,6 @@
 # Age Calculator App - Step-by-Step Class Activities
 
-Below are 5 hands-on activities we will go through to better understand Firebase integration with React.
+Below are 5 hands-on activities to walk through with your students to help them better understand Firebase integration with React.
 
 ## TODO 1: Firebase Project Setup & Configuration
 
@@ -40,6 +40,8 @@ const auth = getAuth(app);
 export { app, db, auth };
 ```
 
+6. Explain to students how the Firebase configuration connects your web app to your Firebase project.
+
 ## TODO 2: Implement User Registration & Authentication State
 
 **Goal:** Understand how Firebase Authentication works with React.
@@ -48,8 +50,8 @@ export { app, db, auth };
 
 1. **Examine the Authentication Context:**
    - Open `src/context/AuthContext.jsx`
-   - Check the `AuthProvider` component and how it manages user authentication state
-   - Observe how `onAuthStateChanged` works as a listener for authentication state changes
+   - Discuss the `AuthProvider` component and how it manages user authentication state
+   - Explain how `onAuthStateChanged` works as a listener for authentication state changes
 
 2. **Enhance User Registration:**
    - Open `src/pages/Register/Register.jsx`
@@ -380,4 +382,186 @@ export default CalculationStats;
 
 .calculation-stats h3 {
   margin-top: 0;
-  color: #4
+  color: #4a55a2;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-item {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #4a55a2;
+}
+
+.age-distribution {
+  margin-top: 1.5rem;
+}
+
+.age-distribution h4 {
+  margin-bottom: 1rem;
+  color: #4a55a2;
+}
+
+.distribution-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.distribution-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.range-label {
+  width: 50px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.range-bar-container {
+  flex: 1;
+  height: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.range-bar {
+  height: 100%;
+  background-color: #7895cb;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.range-count {
+  width: 30px;
+  text-align: right;
+  font-size: 0.9rem;
+  color: #666;
+}
+```
+
+4. **Add the Stats Component to the Dashboard:**
+   - Update `src/pages/Dashboard/Dashboard.jsx` to include the stats component:
+
+```javascript
+import { useState } from "react";
+import AgeCalculator from "../../components/AgeCalculator/AgeCalculator";
+import CalculationHistory from "../../components/CalculationHistory/CalculationHistory";
+import CalculationStats from "../../components/CalculationStats/CalculationStats";
+import { useAuth } from "../../context/AuthContext";
+import { getUserCalculations } from "../../services/firestore";
+import "./Dashboard.css";
+
+const Dashboard = () => {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [calculations, setCalculations] = useState([]);
+  const { currentUser } = useAuth();
+
+  useEffect(() => {
+    if (!currentUser) return;
+    
+    const fetchCalculations = async () => {
+      const { calculations, error } = await getUserCalculations(currentUser.uid);
+      if (!error) {
+        setCalculations(calculations);
+      }
+    };
+    
+    fetchCalculations();
+  }, [currentUser, refreshTrigger]);
+
+  const handleCalculate = () => {
+    // Trigger a refresh of the calculation history
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  return (
+    <div className="dashboard-container">
+      <h1>Your Dashboard</h1>
+      <div className="dashboard-content">
+        <div className="dashboard-left">
+          <AgeCalculator onCalculate={handleCalculate} />
+          <CalculationStats calculations={calculations} />
+        </div>
+        <div className="dashboard-right">
+          <CalculationHistory 
+            refreshTrigger={refreshTrigger}
+            onCalculationsLoaded={setCalculations} 
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
+```
+
+5. **Update the Dashboard CSS:**
+   - Modify `src/pages/Dashboard/Dashboard.css` to adjust the layout:
+
+```css
+.dashboard-container {
+  padding: 2rem;
+  background-color: #f5f7fa;
+  min-height: calc(100vh - 70px);
+}
+
+.dashboard-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #4a55a2;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-left, .dashboard-right {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-content {
+    flex-direction: row;
+  }
+  
+  .dashboard-left {
+    flex: 1;
+  }
+  
+  .dashboard-right {
+    flex: 1;
+  }
+}
+```
