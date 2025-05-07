@@ -3,12 +3,14 @@ import {
     addDoc, 
     query, 
     where, 
+    orderBy,
     getDocs, 
     Timestamp,
     deleteDoc
   } from "firebase/firestore";
   import { db } from "./firebase";
-  
+  import { onSnapshot } from "firebase/firestore";
+
   // Save a calculation to Firestore
   export const saveCalculation = async (userId, dateOfBirth, result) => {
     try {
@@ -70,4 +72,25 @@ import {
     } catch (error) {
       return { success: false, error: error.message };
     }
+  };
+
+  export const subscribeToUserCalculations = (userId, callback) => {
+    const q = query(
+      collection(db, "calculations"),
+      where("userId", "==", userId)
+    );
+    
+    // Return the unsubscribe function
+    return onSnapshot(q, (querySnapshot) => {
+      const calculations = [];
+      querySnapshot.forEach((doc) => {
+        calculations.push({
+          id: doc.id,
+          ...doc.data(),
+          calculatedAt: doc.data().calculatedAt.toDate(),
+          dateOfBirth: doc.data().dateOfBirth
+        });
+      });
+      callback(calculations);
+    });
   };

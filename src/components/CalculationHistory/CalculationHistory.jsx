@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { getUserCalculations } from "../../services/firestore";
+import { getUserCalculations, subscribeToUserCalculations } from "../../services/firestore";
 import "./CalculationHistory.css";
 
 const CalculationHistory = ({ refreshTrigger }) => {
@@ -9,27 +9,46 @@ const CalculationHistory = ({ refreshTrigger }) => {
   const [error, setError] = useState("");
   const { currentUser } = useAuth();
 
+//   useEffect(() => {
+//     if (!currentUser) return;
+
+//     setLoading(true);
+//     getUserCalculations(currentUser.uid)
+//       .then((response) => {
+//         if (response.error) {
+//           setError(response.error);
+//         } else {
+//           // Sort by calculatedAt in descending order (newest first)
+//           const sortedCalculations = response.calculations.sort((a, b) => 
+//             b.calculatedAt - a.calculatedAt
+//           );
+//           setCalculations(sortedCalculations);
+//           setError("");
+//         }
+//       })
+//       .finally(() => {
+//         setLoading(false);
+//       });
+//   }, [currentUser, refreshTrigger]);
+
   useEffect(() => {
     if (!currentUser) return;
-
+  
     setLoading(true);
-    getUserCalculations(currentUser.uid)
-      .then((response) => {
-        if (response.error) {
-          setError(response.error);
-        } else {
-          // Sort by calculatedAt in descending order (newest first)
-          const sortedCalculations = response.calculations.sort((a, b) => 
-            b.calculatedAt - a.calculatedAt
-          );
-          setCalculations(sortedCalculations);
-          setError("");
-        }
-      })
-      .finally(() => {
+    
+    // Set up real-time listener
+    const unsubscribe = subscribeToUserCalculations(
+      currentUser.uid,
+      (calculations) => {
+        setCalculations(calculations);
         setLoading(false);
-      });
-  }, [currentUser, refreshTrigger]);
+        setError("");
+      }
+    );
+    
+    // Clean up listener on unmount
+    return () => unsubscribe();
+  }, [currentUser]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
